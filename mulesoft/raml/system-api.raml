@@ -1,0 +1,57 @@
+#%RAML 1.0
+title: SmartBank Core Support System API
+version: v1
+baseUri: https://api.example.com/smartbank/system/v1
+mediaType: application/json
+protocols: [ HTTPS ]
+description: Abstracts core banking and case-management systems. Replace examples with approved system mappings; never return secrets or unfiltered customer data.
+
+securitySchemes:
+  client_credentials:
+    type: OAuth 2.0
+    describedBy:
+      headers:
+        Authorization:
+          type: string
+          required: true
+    settings:
+      authorizationUri: https://identity.example.com/oauth/authorize
+      accessTokenUri: https://identity.example.com/oauth/token
+      authorizationGrants: [ client_credentials ]
+securedBy: [ client_credentials ]
+
+/transactions/{reference}:
+  uriParameters:
+    reference: { type: string, minLength: 6, maxLength: 80 }
+  get:
+    description: Return minimal transaction status only after Process API authorization and customer ownership checks.
+    responses:
+      200:
+        body:
+          application/json:
+            example: { reference: DEMO-TXN-1001, status: SUCCESS }
+      404:
+        body:
+          application/json:
+            example: { code: NOT_FOUND, message: Transaction not found }
+
+/cases:
+  post:
+    headers:
+      Idempotency-Key:
+        type: string
+        required: true
+    body:
+      application/json:
+        example:
+          category: transaction
+          description: Transfer status requires review
+    responses:
+      201:
+        body:
+          application/json:
+            example: { caseId: SB-12345678, status: RECEIVED }
+      409:
+        body:
+          application/json:
+            example: { code: DUPLICATE_REQUEST, message: Duplicate request }
