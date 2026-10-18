@@ -1,0 +1,77 @@
+#%RAML 1.0
+title: SmartBank Customer Support Process API
+version: v1
+baseUri: https://api.example.com/smartbank/process/v1
+mediaType: application/json
+protocols: [ HTTPS ]
+description: Process orchestration for approved FAQs, complaint intake, and transaction inquiry. Implement idempotency, validation, audit, and policy controls in Mule flows.
+
+securitySchemes:
+  oauth_2_0:
+    type: OAuth 2.0
+    describedBy:
+      headers:
+        Authorization:
+          type: string
+          required: true
+    settings:
+      authorizationUri: https://identity.example.com/oauth/authorize
+      accessTokenUri: https://identity.example.com/oauth/token
+      authorizationGrants: [ client_credentials ]
+securedBy: [ oauth_2_0 ]
+
+types:
+  ComplaintRequest:
+    type: object
+    properties:
+      category: { type: string, enum: [transaction, card, digital_banking, service, other] }
+      description: { type: string, minLength: 10, maxLength: 1500 }
+      idempotencyKey: { type: string, minLength: 8, maxLength: 100 }
+  ComplaintResponse:
+    type: object
+    properties:
+      caseId: string
+      status: { type: string, enum: [RECEIVED, IN_PROGRESS, RESOLVED, REJECTED] }
+  TransactionInquiry:
+    type: object
+    properties:
+      reference: { type: string, minLength: 6, maxLength: 80 }
+
+ /complaints:
+  post:
+    body:
+      application/json:
+        type: ComplaintRequest
+    responses:
+      201:
+        body:
+          application/json:
+            type: ComplaintResponse
+      400:
+        body:
+          application/json:
+            example: { code: VALIDATION_ERROR, message: Invalid request }
+      401:
+        body:
+          application/json:
+            example: { code: UNAUTHORIZED, message: Authentication required }
+      409:
+        body:
+          application/json:
+            example: { code: DUPLICATE_REQUEST, message: Idempotency key already used }
+
+/transactions/status:
+  post:
+    description: Requires authenticated, customer-scoped authorization before returning account-specific transaction information.
+    body:
+      application/json:
+        type: TransactionInquiry
+    responses:
+      200:
+        body:
+          application/json:
+            example: { reference: DEMO-TXN-1001, status: SUCCESS }
+      403:
+        body:
+          application/json:
+            example: { code: FORBIDDEN, message: Customer is not authorized for this transaction }
