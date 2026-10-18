@@ -1,0 +1,79 @@
+#%RAML 1.0
+title: SmartBank Customer Experience API
+version: v1
+baseUri: https://api.example.com/smartbank/experience/v1
+mediaType: application/json
+protocols: [ HTTPS ]
+description: Customer-facing orchestration boundary. Secure with bank-approved OAuth 2.0/OIDC and customer-scoped authorization before production use.
+
+securitySchemes:
+  oauth_2_0:
+    description: Replace with the organization's approved OAuth provider and scopes.
+    type: OAuth 2.0
+    describedBy:
+      headers:
+        Authorization:
+          type: string
+          required: true
+    settings:
+      authorizationUri: https://identity.example.com/oauth/authorize
+      accessTokenUri: https://identity.example.com/oauth/token
+      authorizationGrants: [ authorization_code ]
+securedBy: [ oauth_2_0 ]
+
+types:
+  ChatRequest:
+    type: object
+    properties:
+      message: { type: string, minLength: 1, maxLength: 2000 }
+      language: { type: string, enum: [en, te, hi], default: en }
+  ChatResponse:
+    type: object
+    properties:
+      answer: string
+      intent: string
+      source: string
+      escalationRequired: boolean
+  ErrorResponse:
+    type: object
+    properties:
+      code: string
+      message: string
+      correlationId?: string
+
+/chat:
+  post:
+    description: Routes a question to the approved knowledge/process layer. Must not expose private account data without verified identity and authorization.
+    body:
+      application/json:
+        type: ChatRequest
+    responses:
+      200:
+        body:
+          application/json:
+            type: ChatResponse
+      400:
+        body:
+          application/json:
+            type: ErrorResponse
+      401:
+        body:
+          application/json:
+            type: ErrorResponse
+      429:
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        body:
+          application/json:
+            type: ErrorResponse
+
+/health:
+  get:
+    securedBy: [ null ]
+    responses:
+      200:
+        body:
+          application/json:
+            example: { status: UP }
