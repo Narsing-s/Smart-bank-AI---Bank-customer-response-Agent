@@ -7,12 +7,12 @@ A mobile-friendly banking support assistant with a modern chat UI, a safe demo A
 ## What's included
 
 - Responsive customer-support chat UI (Next.js + TypeScript).
-- FastAPI backend with deterministic answers for common banking FAQs, complaint creation, health checks, and sample transaction-status lookup.
+- FastAPI backend with deterministic FAQ answers, local retrieval over curated approved guidance, complaint creation/tracking, health checks, and sample transaction-status lookup.
 - English, Telugu, and Hindi UI language selector, with translated answers for the approved demo FAQ set.
 - Safe escalation guidance when the assistant cannot answer.
 - RAML contracts for Experience, Process, and System APIs, plus MuleSoft implementation guidance.
 - GitHub Actions checks for the backend.
-- No API key is required for the demo: FAQ responses work using a deterministic local knowledge base.
+- No API key is required for the demo: FAQ responses and retrieval use local, curated files; no external LLM or vector database is called. Retrieval uses token overlap and deliberately escalates when it cannot find a clear match.
 
 ## Architecture
 
@@ -23,7 +23,7 @@ Customer (mobile/web)
 Next.js customer experience
        |
        v
-FastAPI assistant (local/demo mode; RAG adapter can be added)
+FastAPI assistant (local/demo mode)
        |
        +---- FAQ knowledge base (approved sample content)
        +---- synthetic transaction lookup
@@ -105,7 +105,7 @@ Hosting providers and free tiers can change; check current limits before deploym
 
 - The demo never asks for authentication secrets and explicitly refuses to handle PINs, OTPs, CVVs, or passwords.
 - Transaction IDs are synthetic demo references, not proof of identity.
-- Demo complaint records are held in process memory and are lost on restart; this is not production storage. The case-tracking endpoint returns only the reference, status, timestamp, and demo notice; it intentionally does not return the submitted description.
+- Demo complaint records are held in process memory and are lost on restart; this is not production storage. The UI can track a newly created case, but the reference is not connected to a real bank. The case-tracking endpoint returns only the reference, status, timestamp, and demo notice; it intentionally does not return the submitted description.
 - Before production: add bank SSO/OIDC, customer-scoped authorization, persistent encrypted storage, audit trails, PII redaction, abuse protection, approved knowledge review, and human escalation SLAs.
 - Do not use an LLM to invent account balances, policy details, transaction outcomes, or financial advice. Ground responses in approved sources and escalate uncertainty.
 
