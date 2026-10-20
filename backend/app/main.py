@@ -61,6 +61,50 @@ FAQS = [
     {"id": "loan_status", "question": "How can I check my loan application?", "keywords": ["loan status", "loan application", "loan approval"], "answer": "Check your application in the bank's official app or website, or contact the loan team using verified contact details. This demo cannot access real loan applications."},
 ]
 
+FAQ_TRANSLATIONS: dict[str, dict[str, str]] = {
+    "account_statement": {
+        "te": "సాధారణంగా మీ బ్యాంక్ అధికారిక మొబైల్ యాప్ లేదా ఇంటర్నెట్ బ్యాంకింగ్‌లో స్టేట్‌మెంట్ డౌన్‌లోడ్ చేసుకోవచ్చు. ఖాతా, తేదీల పరిధిని ఎంచుకుని స్టేట్‌మెంట్/డౌన్‌లోడ్ ఎంపికను ఉపయోగించండి. మెనూ పేర్లు బ్యాంక్‌ను బట్టి మారవచ్చు.",
+        "hi": "आमतौर पर आप अपने बैंक के आधिकारिक मोबाइल ऐप या इंटरनेट बैंकिंग से स्टेटमेंट डाउनलोड कर सकते हैं। खाता और तारीख की सीमा चुनकर स्टेटमेंट/डाउनलोड विकल्प का उपयोग करें। मेनू के नाम बैंक के अनुसार अलग हो सकते हैं।",
+    },
+    "card_pin_help": {
+        "te": "మీ భద్రత కోసం, మీ డెబిట్ కార్డ్ PIN‌ను బ్యాంక్ అధికారిక యాప్, వెబ్‌సైట్, ATM లేదా ధృవీకరించిన కస్టమర్-కేర్ మార్గం ద్వారానే రీసెట్ చేయండి. ఈ సహాయకుడితో సహా ఎవరితోనూ మీ PIN లేదా OTP పంచుకోవద్దు.",
+        "hi": "आपकी सुरक्षा के लिए, डेबिट कार्ड PIN केवल बैंक के आधिकारिक ऐप, वेबसाइट, ATM या सत्यापित ग्राहक सेवा के माध्यम से रीसेट करें। इस सहायक सहित किसी के साथ भी अपना PIN या OTP साझा न करें।",
+    },
+    "failed_transaction": {
+        "te": "మీ బ్యాంక్ అధికారిక యాప్‌లో లావాదేవీ స్థితిని తనిఖీ చేసి రిఫరెన్స్ నంబర్‌ను భద్రపరచండి. రివర్సల్ సమయం చెల్లింపు విధానం మరియు బ్యాంక్ నియమాలపై ఆధారపడి ఉంటుంది. మొత్తం డెబిట్ అయి, గ్రహీతకు చేరకపోతే అధికారిక మార్గంలో ఫిర్యాదు చేయండి. OTPలు లేదా పూర్తి కార్డ్ వివరాలు పంచుకోవద్దు.",
+        "hi": "अपने बैंक के आधिकारिक ऐप में लेन-देन की स्थिति जाँचें और संदर्भ संख्या सुरक्षित रखें। रिवर्सल का समय भुगतान प्रकार और बैंक के नियमों पर निर्भर करता है। राशि डेबिट हो गई हो लेकिन प्राप्तकर्ता को न मिली हो, तो आधिकारिक माध्यम से शिकायत करें। OTP या कार्ड की पूरी जानकारी साझा न करें।",
+    },
+    "block_card": {
+        "te": "మీ కార్డ్ పోయినా లేదా దొంగిలించబడినా, బ్యాంక్ అధికారిక యాప్, ఇంటర్నెట్ బ్యాంకింగ్ లేదా ధృవీకరించిన కస్టమర్-కేర్ నంబర్ ద్వారా వెంటనే బ్లాక్ చేయండి. ఇటీవలి లావాదేవీలను పరిశీలించి, గుర్తించని లావాదేవీలను నివేదించండి.",
+        "hi": "यदि आपका कार्ड खो गया है या चोरी हो गया है, तो बैंक के आधिकारिक ऐप, इंटरनेट बैंकिंग या सत्यापित ग्राहक सेवा नंबर से तुरंत ब्लॉक करें। हाल के लेन-देन देखें और किसी अनजान लेन-देन की सूचना दें।",
+    },
+    "update_contact": {
+        "te": "మీ రిజిస్టర్డ్ మొబైల్ నంబర్‌ను మార్చడానికి మీ బ్యాంక్ అధికారిక ప్రక్రియను అనుసరించండి. బ్యాంక్‌ను బట్టి ATM లేదా బ్రాంచ్‌లో గుర్తింపు ధృవీకరణ అవసరం కావచ్చు. చాట్‌లో OTP పంచుకోవద్దు.",
+        "hi": "रजिस्टर्ड मोबाइल नंबर बदलने के लिए बैंक की आधिकारिक प्रक्रिया अपनाएँ। बैंक के अनुसार ATM या शाखा में पहचान सत्यापन की आवश्यकता हो सकती है। चैट में OTP साझा न करें।",
+    },
+    "working_hours": {
+        "te": "మీ బ్యాంక్ అధికారిక యాప్‌లో, కార్డ్‌పై లేదా ధృవీకరించిన వెబ్‌సైట్‌లో ఉన్న కస్టమర్-కేర్ వివరాలను ఉపయోగించండి. అనుకోని సందేశాలు లేదా శోధన ప్రకటనల్లో కనిపించే నంబర్లను నమ్మవద్దు.",
+        "hi": "अपने बैंक के आधिकारिक ऐप, कार्ड या सत्यापित वेबसाइट पर दिए गए ग्राहक सेवा विवरण का उपयोग करें। अनचाहे संदेशों या खोज विज्ञापनों में दिए गए नंबरों से सावधान रहें।",
+    },
+    "upi_safety": {
+        "te": "డబ్బు స్వీకరించడానికి ఎప్పుడూ UPI PIN నమోదు చేయవద్దు. మీకు అర్థమైన అభ్యర్థనలనే ఆమోదించండి, చెల్లించే ముందు గ్రహీతను ధృవీకరించండి, PIN లేదా OTP ఎవరితోనూ పంచుకోవద్దు. మోసం అనుమానం ఉంటే వెంటనే బ్యాంక్ అధికారిక మార్గంలో సంప్రదించండి.",
+        "hi": "पैसे प्राप्त करने के लिए कभी भी UPI PIN न डालें। केवल उन्हीं अनुरोधों को मंज़ूरी दें जिन्हें आप समझते हैं, भुगतान से पहले प्राप्तकर्ता की पुष्टि करें और PIN या OTP साझा न करें। धोखाधड़ी का संदेह हो तो तुरंत बैंक के आधिकारिक माध्यम से संपर्क करें।",
+    },
+    "loan_status": {
+        "te": "మీ దరఖాస్తు స్థితిని బ్యాంక్ అధికారిక యాప్ లేదా వెబ్‌సైట్‌లో తనిఖీ చేయండి లేదా ధృవీకరించిన సంప్రదింపు వివరాల ద్వారా లోన్ బృందాన్ని సంప్రదించండి. ఈ డెమో నిజమైన లోన్ దరఖాస్తులను చూడలేడు.",
+        "hi": "अपने आवेदन की स्थिति बैंक के आधिकारिक ऐप या वेबसाइट पर देखें, या सत्यापित संपर्क विवरण से ऋण टीम से संपर्क करें। यह डेमो वास्तविक ऋण आवेदनों तक पहुँच नहीं सकता।",
+    },
+}
+
+
+def translate_faq(faq_id: str, answer: str, language: Language) -> str:
+    if language == "en":
+        return answer
+    translated = FAQ_TRANSLATIONS.get(faq_id, {}).get(language)
+    return translated or translate_static(answer, language)
+
+
+
 # Detect both explicit labels and likely secret values; never echo submitted text in the response.
 SECRET_PATTERNS = [
     re.compile(r"\b(?:otp|one[- ]time password)\b\s*(?:is|:|=|-)?\s*\d{4,8}\b", re.I),
@@ -104,7 +148,7 @@ def answer_for(message: str, language: Language) -> ChatResponse:
     if matched:
         faq = max(matched, key=lambda item: item[0])[1]
         return ChatResponse(
-            answer=translate_static(faq["answer"], language),
+            answer=translate_faq(faq["id"], faq["answer"], language),
             intent=faq["id"],
             source="approved_demo_faq",
         )
@@ -157,6 +201,21 @@ def transaction_status(reference: str) -> dict[str, str]:
 
 # In-memory storage is intentionally demo-only; use a durable, access-controlled store in production.
 COMPLAINTS: list[dict[str, str]] = []
+
+
+@app.get("/api/complaints/{case_id}")
+def get_complaint_status(case_id: str) -> dict[str, str]:
+    """Look up a demo case by its reference; never return the submitted description."""
+    normalized_id = case_id.strip().upper()
+    record = next((item for item in COMPLAINTS if item["case_id"] == normalized_id), None)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Demo case reference not found.")
+    return {
+        "case_id": record["case_id"],
+        "status": record["status"],
+        "created_at": record["created_at"],
+        "notice": "Demo case only; this reference is not linked to a real bank.",
+    }
 
 
 @app.post("/api/complaints", response_model=ComplaintResponse, status_code=201)

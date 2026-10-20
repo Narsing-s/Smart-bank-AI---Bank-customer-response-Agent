@@ -8,7 +8,7 @@ A mobile-friendly banking support assistant with a modern chat UI, a safe demo A
 
 - Responsive customer-support chat UI (Next.js + TypeScript).
 - FastAPI backend with deterministic answers for common banking FAQs, complaint creation, health checks, and sample transaction-status lookup.
-- English, Telugu, and Hindi UI language selector (starter content; not every answer is fully translated yet).
+- English, Telugu, and Hindi UI language selector, with translated answers for the approved demo FAQ set.
 - Safe escalation guidance when the assistant cannot answer.
 - RAML contracts for Experience, Process, and System APIs, plus MuleSoft implementation guidance.
 - GitHub Actions checks for the backend.
@@ -105,7 +105,7 @@ Hosting providers and free tiers can change; check current limits before deploym
 
 - The demo never asks for authentication secrets and explicitly refuses to handle PINs, OTPs, CVVs, or passwords.
 - Transaction IDs are synthetic demo references, not proof of identity.
-- Demo complaint records are held in process memory and are lost on restart; this is not production storage.
+- Demo complaint records are held in process memory and are lost on restart; this is not production storage. The case-tracking endpoint returns only the reference, status, timestamp, and demo notice; it intentionally does not return the submitted description.
 - Before production: add bank SSO/OIDC, customer-scoped authorization, persistent encrypted storage, audit trails, PII redaction, abuse protection, approved knowledge review, and human escalation SLAs.
 - Do not use an LLM to invent account balances, policy details, transaction outcomes, or financial advice. Ground responses in approved sources and escalate uncertainty.
 
