@@ -200,8 +200,8 @@ def answer_for(message: str, language: Language) -> ChatResponse:
 
     # A specific ATM cash-dispense issue is more precise than the generic "debited" FAQ keyword.
     atm_guidance = retrieve_approved_guidance(message)
-    if atm_guidance and atm_guidance["title"] == "ATM cash not dispensed" and re.search(r"\\batm\\b", normalized) and ("cash" in normalized or "dispens" in normalized):
-        answer = f"{atm_guidance['title']}\\n\\n{atm_guidance['text']}\\n\\nThis guidance comes from the approved demo knowledge base, not your bank's account systems."
+    if atm_guidance and atm_guidance["title"] == "ATM cash not dispensed" and re.search(r"\batm\b", normalized) and ("cash" in normalized or "dispens" in normalized):
+        answer = f"{atm_guidance['title']}\n\n{atm_guidance['text']}\n\nThis guidance comes from the approved demo knowledge base, not your bank's account systems."
         return ChatResponse(
             answer=translate_static(answer, language),
             intent="approved_guidance_retrieval",
