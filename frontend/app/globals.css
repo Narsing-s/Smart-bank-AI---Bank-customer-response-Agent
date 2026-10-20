@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 
-:root{--navy:#071b35;--navy2:#102e50;--blue:#2463eb;--blue2:#3b82f6;--ink:#15243a;--muted:#728097;--line:#e7edf5;--surface:#f7f9fc;--white:#fff;--mint:#dff8ee;--shadow:0 18px 55px rgba(20,48,85,.09}
+:root{--navy:#071b35;--navy2:#102e50;--blue:#2463eb;--blue2:#3b82f6;--ink:#15243a;--muted:#728097;--line:#e7edf5;--surface:#f7f9fc;--white:#fff;--mint:#dff8ee;--shadow:0 18px 55px rgba(20,48,85,.09)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:#fff;color:var(--ink);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased}

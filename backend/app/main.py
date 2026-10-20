@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import uuid
+from pathlib import Path
 from datetime import datetime, timezone
 from typing import Literal
 
@@ -127,6 +128,64 @@ def translate_static(answer: str, language: Language) -> str:
     return answer
 
 
+
+KNOWLEDGE_FILE = Path(__file__).resolve().parents[1] / "knowledge_base" / "approved_banking_guidance.md"
+RETRIEVAL_STOP_WORDS = {
+    "a", "an", "and", "are", "can", "do", "for", "how", "i", "in", "is",
+    "it", "me", "my", "of", "on", "or", "the", "to", "what", "when",
+    "where", "with", "you", "your", "please", "help", "about",
+}
+
+
+def _knowledge_chunks() -> list[dict[str, str]]:
+    """Load only curated local guidance; no user uploads or external content are indexed."""
+    try:
+        content = KNOWLEDGE_FILE.read_text(encoding="utf-8")
+    except OSError:
+        return []
+    chunks: list[dict[str, str]] = []
+    heading = ""
+    paragraphs: list[str] = []
+    for line in content.splitlines():
+        if line.startswith("## "):
+            if heading and paragraphs:
+                chunks.append({"title": heading, "text": " ".join(paragraphs).strip()})
+            heading = line[3:].strip()
+            paragraphs = []
+        elif line.strip() and not line.startswith("# "):
+            paragraphs.append(line.strip())
+    if heading and paragraphs:
+        chunks.append({"title": heading, "text": " ".join(paragraphs).strip()})
+    return chunks
+
+
+def retrieve_approved_guidance(message: str) -> dict[str, str] | None:
+    """Small local retrieval step: rank approved chunks by meaningful token overlap."""
+    tokens = {
+        token for token in re.findall(r"[a-z0-9]+", message.lower())
+        if len(token) > 2 and token not in RETRIEVAL_STOP_WORDS
+    }
+    if not tokens:
+        return None
+    ranked: list[tuple[float, dict[str, str]]] = []
+    for chunk in _knowledge_chunks():
+        text_tokens = set(re.findall(r"[a-z0-9]+", (chunk["title"] + " " + chunk["text"]).lower()))
+        overlap = tokens & text_tokens
+        # A modest overlap threshold avoids returning unrelated generic documents.
+        score = len(overlap) / max(1, len(tokens))
+        if len(overlap) >= 2 and score >= 0.25:
+            ranked.append((score, chunk))
+    if not ranked:
+        return None
+    ranked.sort(key=lambda item: (item[0], len(item[1]["title"])), reverse=True)
+    best_score, best = ranked[0]
+    if len(ranked) > 1 and best_score - ranked[1][0] < 0.08:
+        # Ambiguous retrieval should safely escalate rather than guess.
+        return None
+    return best
+
+
+
 def answer_for(message: str, language: Language) -> ChatResponse:
     normalized = re.sub(r"[^a-z0-9\s]", " ", message.lower())
     normalized = re.sub(r"\s+", " ", normalized).strip()
@@ -137,6 +196,17 @@ def answer_for(message: str, language: Language) -> ChatResponse:
             intent="sensitive_data_guard",
             source="security_policy",
             escalation_required=True,
+        )
+
+    # A specific ATM cash-dispense issue is more precise than the generic "debited" FAQ keyword.
+    atm_guidance = retrieve_approved_guidance(message)
+    if atm_guidance and atm_guidance["title"] == "ATM cash not dispensed" and re.search(r"\batm\b", normalized) and ("cash" in normalized or "dispens" in normalized):
+        answer = f"{atm_guidance['title']}\n\n{atm_guidance['text']}\n\nThis guidance comes from the approved demo knowledge base, not your bank's account systems."
+        return ChatResponse(
+            answer=translate_static(answer, language),
+            intent="approved_guidance_retrieval",
+            source="approved_knowledge_base",
+            escalation_required=False,
         )
 
     # Prefer the longest matching keyword so broad terms cannot shadow specific intents.
@@ -159,6 +229,16 @@ def answer_for(message: str, language: Language) -> ChatResponse:
             intent="private_account_data",
             source="security_policy",
             escalation_required=True,
+        )
+
+    retrieved = retrieve_approved_guidance(message)
+    if retrieved:
+        answer = f"{retrieved['title']}\\n\\n{retrieved['text']}\\n\\nThis guidance comes from the approved demo knowledge base, not your bank's account systems."
+        return ChatResponse(
+            answer=translate_static(answer, language),
+            intent="approved_guidance_retrieval",
+            source="approved_knowledge_base",
+            escalation_required=False,
         )
 
     return ChatResponse(

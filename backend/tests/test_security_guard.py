@@ -67,3 +67,24 @@ def test_demo_case_can_be_tracked_without_exposing_description():
 def test_unknown_demo_case_returns_404():
     response = client.get("/api/complaints/SB-NOTREAL")
     assert response.status_code == 404
+
+
+
+def test_approved_knowledge_retrieval_finds_relevant_article():
+    from app.main import retrieve_approved_guidance
+
+    result = retrieve_approved_guidance("ATM cash not dispensed account debited")
+    assert result is not None
+    assert result["title"] == "ATM cash not dispensed"
+
+
+def test_approved_knowledge_retrieval_returns_safe_source():
+    response = answer_for("ATM cash was not dispensed but I was debited", "en")
+    assert response.source == "approved_knowledge_base"
+    assert response.intent == "approved_guidance_retrieval"
+
+
+def test_approved_knowledge_retrieval_ignores_unrelated_question():
+    from app.main import retrieve_approved_guidance
+
+    assert retrieve_approved_guidance("tell me a joke about weather") is None

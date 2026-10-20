@@ -92,6 +92,8 @@ export default function Home() {
   const [caseCategory, setCaseCategory] = useState("service");
   const [caseDescription, setCaseDescription] = useState("");
   const [caseResult, setCaseResult] = useState("");
+  const [caseId, setCaseId] = useState("");
+  const [caseTrackingResult, setCaseTrackingResult] = useState("");
   const [apiStatus, setApiStatus] = useState<"checking" | "online" | "offline">("checking");
   const endRef = useRef<HTMLDivElement>(null);
   const t = copy[language];
@@ -153,6 +155,8 @@ export default function Home() {
   async function submitCase(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setCaseResult("");
+    setCaseTrackingResult("");
+    setCaseId("");
     try {
       const response = await fetch(`${API_BASE}/api/complaints`, {
         method: "POST",
@@ -161,10 +165,26 @@ export default function Home() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.detail || "Unable to create demo case");
+      setCaseId(data.case_id);
       setCaseResult(`Case ${data.case_id} received. Demo only — not sent to a real bank.`);
       setCaseDescription("");
     } catch {
       setCaseResult("The demo API is unavailable. Please start the backend and try again.");
+    }
+  }
+
+  async function trackDemoCase() {
+    if (!caseId) return;
+    setCaseTrackingResult("Checking demo case status…");
+    try {
+      const response = await fetch(`${API_BASE}/api/complaints/${encodeURIComponent(caseId)}`, {
+        signal: AbortSignal.timeout(5000),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || "Unable to find demo case");
+      setCaseTrackingResult(`Status: ${data.status} · Created: ${new Date(data.created_at).toLocaleString()} · Demo only.`);
+    } catch {
+      setCaseTrackingResult("Unable to check this demo case right now. Please try again.");
     }
   }
 
@@ -247,7 +267,7 @@ export default function Home() {
         <div className="chat-disclaimer">Demo assistant · Verify important information with your bank.</div>
       </div>}
 
-      {caseOpen && <div className="modal-backdrop" onClick={() => setCaseOpen(false)}><section className="case-modal" role="dialog" aria-modal="true" aria-labelledby="case-title" onClick={(e) => e.stopPropagation()}><div className="modal-heading"><div className="modal-icon"><Headphones size={21} /></div><button className="icon-button" onClick={() => setCaseOpen(false)} aria-label="Close support form"><X size={19} /></button></div><span className="section-kicker">SUPPORT CENTER</span><h2 id="case-title">How can we help?</h2><p className="modal-subtitle">Create a demo support case. It will not be sent to a real bank.</p><form onSubmit={submitCase}><label htmlFor="category">What do you need help with?</label><select id="category" value={caseCategory} onChange={(e) => setCaseCategory(e.target.value)}><option value="service">General service</option><option value="transaction">Transaction issue</option><option value="card">Card issue</option><option value="digital_banking">Digital banking</option><option value="other">Other</option></select><label htmlFor="description">Describe the issue</label><textarea id="description" value={caseDescription} onChange={(e) => setCaseDescription(e.target.value)} minLength={10} maxLength={1500} required placeholder="Tell us what happened (please do not include account numbers, PINs, or OTPs)." /><button className="primary-button modal-submit" type="submit"><Plus size={17} /> Create demo case <ArrowRight size={16} /></button></form>{caseResult && <div className="case-result" role="status">{caseResult}</div>}<p className="modal-footnote"><ShieldCheck size={14} /> Never include credentials or full payment-card details.</p></section></div>}
+      {caseOpen && <div className="modal-backdrop" onClick={() => setCaseOpen(false)}><section className="case-modal" role="dialog" aria-modal="true" aria-labelledby="case-title" onClick={(e) => e.stopPropagation()}><div className="modal-heading"><div className="modal-icon"><Headphones size={21} /></div><button className="icon-button" onClick={() => setCaseOpen(false)} aria-label="Close support form"><X size={19} /></button></div><span className="section-kicker">SUPPORT CENTER</span><h2 id="case-title">How can we help?</h2><p className="modal-subtitle">Create a demo support case. It will not be sent to a real bank.</p><form onSubmit={submitCase}><label htmlFor="category">What do you need help with?</label><select id="category" value={caseCategory} onChange={(e) => setCaseCategory(e.target.value)}><option value="service">General service</option><option value="transaction">Transaction issue</option><option value="card">Card issue</option><option value="digital_banking">Digital banking</option><option value="other">Other</option></select><label htmlFor="description">Describe the issue</label><textarea id="description" value={caseDescription} onChange={(e) => setCaseDescription(e.target.value)} minLength={10} maxLength={1500} required placeholder="Tell us what happened (please do not include account numbers, PINs, or OTPs)." /><button className="primary-button modal-submit" type="submit"><Plus size={17} /> Create demo case <ArrowRight size={16} /></button></form>{caseResult && <div className="case-result" role="status">{caseResult}{caseId && <button type="button" className="security-link" onClick={() => void trackDemoCase()}>Track this case <ArrowRight size={14} /></button>}</div>}{caseTrackingResult && <div className="case-result" role="status">{caseTrackingResult}</div>}<p className="modal-footnote"><ShieldCheck size={14} /> Never include credentials or full payment-card details.</p></section></div>}
     </main>
   );
 }
